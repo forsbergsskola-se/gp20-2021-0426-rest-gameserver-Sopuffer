@@ -32,6 +32,8 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
             string website = Encoding.ASCII.GetString(resultBytes, 0, totalBytesReceived);
             FindTitleOfWebsite(website, "<title>", "</title>");
            
+            char character = '"';
+            FindHRef(character, website, "< a href =");
         }
 
         public static void FindTitleOfWebsite(string text, string firstString, string lastString)
@@ -43,17 +45,20 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
             int Pos1 = content.IndexOf(STRFirst) + STRFirst.Length;
             int Pos2 = content.IndexOf(STRLast);
             string FinalString = content.Substring(Pos1, Pos2 - Pos1);
-            Console.WriteLine("Title: "  + FinalString );
+            Console.WriteLine("Title: "  + FinalString+  "\r\n\r\n");
         }
-        public static void FindHRef(string reference, string lastString, string text)
+        public static void FindHRef(char quoteMark, string website, string firstString)
         {
-            string content = text;
-            string STRFirst = reference;
-            string STRLast = lastString;
+            string text = website;
+            char quote = quoteMark;
+            string beginningPart = firstString;
 
-            int Pos1 = content.IndexOf(STRFirst) + STRFirst.Length;
-            int Pos2 = content.IndexOf(STRLast);
-          
+            int Pos1 = text.IndexOf(beginningPart) + beginningPart.Length;
+            int Pos2 = text.IndexOf(quote);
+
+            string FinalString = text.Substring(Pos1, Pos2 - Pos1);
+            Console.WriteLine(FinalString);
+
         }
 
 
