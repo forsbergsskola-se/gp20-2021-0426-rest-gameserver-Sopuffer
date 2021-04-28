@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "gp20-2021-0426-rest-gameserver-Sopuffer/1.0.0": {
+        "runtime": {
+          "gp20-2021-0426-rest-gameserver-Sopuffer.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "gp20-2021-0426-rest-gameserver-Sopuffer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
