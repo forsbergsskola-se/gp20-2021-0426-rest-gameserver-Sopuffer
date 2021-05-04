@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+
 namespace gp20_2021_0426_rest_gameserver_Sopuffer
 {
     class Program
@@ -17,7 +20,7 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
 
             var bytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: acme.com\r\n\r\n");
             stream.Write(bytes);
-
+           
             string httpRequestTitle = Encoding.ASCII.GetString(bytes);
             Console.WriteLine(httpRequestTitle);
 
@@ -30,10 +33,13 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
                 totalBytesReceived += bytesReceived;
             }
             string website = Encoding.ASCII.GetString(resultBytes, 0, totalBytesReceived);
+
             FindTitleOfWebsite(website, "<title>", "</title>");
-           
-            char character = '"';
-            FindHRef(character, website, "< a href =");
+            FindHRef(website);
+
+
+            tcpClient.Close();
+            stream.Close();
         }
 
         public static void FindTitleOfWebsite(string text, string firstString, string lastString)
@@ -47,21 +53,116 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
             string FinalString = content.Substring(Pos1, Pos2 - Pos1);
             Console.WriteLine("Title: "  + FinalString+  "\r\n\r\n");
         }
-        public static void FindHRef(char quoteMark, string website, string firstString)
+        
+        
+        
+        public static void FindHRef(string website)
         {
-            string text = website;
-            char quote = quoteMark;
-            string beginningPart = firstString;
+            Regex regex = new Regex("href\\s*=\\s*(?:\"(?<1>[^\"]*)\"|(?<1>\\S+))", RegexOptions.IgnoreCase);
+            Match match;
+            List<Group> options = new List<Group>();
+            for (match = regex.Match(website); match.Success; match = match.NextMatch())
+            {
+                options.Add(match);
+                Console.WriteLine(options.IndexOf(match));
+                Console.WriteLine("Found a href. The groups in the href are: ");
+                foreach (Group group in match.Groups)
+                { 
+                    Console.WriteLine("Group value: {0}", group);
+                }
+                Console.WriteLine("\r\n\r\n");
+            }
 
-            int Pos1 = text.IndexOf(beginningPart) + beginningPart.Length;
-            int Pos2 = text.IndexOf(quote);
 
-            string FinalString = text.Substring(Pos1, Pos2 - Pos1);
-            Console.WriteLine(FinalString);
-
+            ConnectToHref(options);
         }
 
+        public static void ConnectToHref(List<Group> hrefs)
+        {
+            Console.WriteLine("There are " + hrefs.Count + " website connections, with the first connection being at stored at index 0.");
+    
+            while (true)
+            {
+                Console.WriteLine("Please write a number to pick one of these indexes: ");
+
+                string c = Console.ReadLine();
+                int value;
+                
+                if (int.TryParse(c, out value)) {
+                    if (value < hrefs.Count && value >= 0)
+                    {
+                        ExtractHref(hrefs, value);
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error! Number is out of range. Please try again.");
+                        continue;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error! This is not a number! Please try again.");
+                    continue;
+                }
+            }
+        }
+
+        public static void ExtractHref(List<Group> hrefs, int chosenNumber)
+        {
+            Console.WriteLine("Chosen number: " + chosenNumber);
+            for (int i = 0; i <= hrefs.Count; i++)
+            {
+                Group chosenConnection = hrefs[chosenNumber];
+                EnterHrefTcpClient(chosenConnection);
+                break;
+            }
+        }
+
+        public static void EnterHrefTcpClient(Group hrefConnection)
+        {
+            var connection = hrefConnection.ToString();
+            string tcpName = connection.Substring(connection.IndexOf('"') +1);
+            tcpName = tcpName.Remove(tcpName.Length - 1);
+            Console.WriteLine(tcpName);
+
+            if (tcpName.Contains("https") || tcpName.Contains("www"))
+            {
+                if (tcpName.Contains("google"))
+                {
+                    var tcpClient = new TcpClient("google.com", 80);
+                    var stream = tcpClient.GetStream();
+
+                    var bytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n");
+                    stream.Write(bytes);
+                    string httpRequestTitle = Encoding.ASCII.GetString(bytes);
+                    Console.WriteLine(httpRequestTitle);
+                    byte[] resultBytes = new byte[124 * 124];
+                    var totalBytesReceived = 0;
+                    var bytesReceived = 1;
+                    while (bytesReceived != 0)
+                    {
+                        bytesReceived = stream.Read(resultBytes, totalBytesReceived, resultBytes.Length - totalBytesReceived);
+                        totalBytesReceived += bytesReceived;
+                        string website = Encoding.ASCII.GetString(resultBytes, 0, totalBytesReceived);
+                        Console.WriteLine(website);
+                    }
+
+                    tcpClient.Close();
+                    stream.Close();
+                }
 
 
+
+
+
+                //FindTitleOfWebsite(website, "<title>", "</title>");
+                //FindHRef(website);
+
+
+
+            }
+
+        }
     }
 }
