@@ -14,3 +14,5 @@ C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer
 C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\ref\GithubExplorer.dll
 C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.pdb
 C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.genruntimeconfig.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\Newtonsoft.Json.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.csproj.CopyComplete

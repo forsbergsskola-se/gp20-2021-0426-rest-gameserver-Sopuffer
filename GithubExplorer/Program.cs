@@ -1,46 +1,51 @@
 ﻿using System;
-using System.Net.Sockets;
-using System.Net.Http;
 using System.Text;
-using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace GithubExplorer
 {
     class Program
     {
-        static void Main(string[] args)
+        public static string input;
+        static async Task Main(string[] args)
         {
-            GithubServer.Start();
+            Task t = new Task(HTTP_GET);
+            Console.WriteLine("Please enter a Github User: ");
+            input = Console.ReadLine();
+            if (input != null){
+                t.Start();
+            }
             Console.ReadLine();
         }
-    }
 
-    class GithubServer
-    {
-        static readonly HttpClient client = new HttpClient();
-        public static async void Start()
+        static async void HTTP_GET()
         {
-            Console.WriteLine("Please add a github Username to explore");
-            string input = Console.ReadLine();
+           
+            if (input != null) {
+                var TARGETURL = "https://api.github.com/users/" + input;
 
-            if (input != null)
-            {
-                try
-                {
-                    HttpResponseMessage response = await client.GetAsync("https://api.github.com/users/" + input);
+                HttpClientHandler handler = new HttpClientHandler();
 
-                    response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
-                }
+                Console.WriteLine("GET: " + TARGETURL);
 
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", e.Message);
+                HttpClient client = new HttpClient(handler);
+
+                var byteArray = Encoding.ASCII.GetBytes("username:password1234");
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                client.DefaultRequestHeaders.Add("User-Agent", "C# App");
+                HttpResponseMessage response = await client.GetAsync(TARGETURL);
+                HttpContent content = response.Content;
+
+                Console.WriteLine("Response StatusCode: " + (int)response.StatusCode);
+
+                string result = await content.ReadAsStringAsync();
+
+                if (result != null) {
+                    Console.WriteLine(result);
                 }
             }
         }
     }
 }
+
