@@ -1,0 +1,16 @@
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\GithubExplorer.exe
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\GithubExplorer.deps.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\GithubExplorer.runtimeconfig.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\GithubExplorer.runtimeconfig.dev.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\GithubExplorer.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\ref\GithubExplorer.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\bin\Debug\net5.0\GithubExplorer.pdb
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.csprojAssemblyReference.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.AssemblyInfoInputs.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.AssemblyInfo.cs
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.csproj.CoreCompileInputs.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\ref\GithubExplorer.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.pdb
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\GithubExplorer\obj\Debug\net5.0\GithubExplorer.genruntimeconfig.cache
