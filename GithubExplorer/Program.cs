@@ -28,7 +28,7 @@ namespace GithubExplorer
             {
                 try
                 {
-                    HttpResponseMessage response = await client.GetAsync("http://www.github.com/"+input);
+                    HttpResponseMessage response = await client.GetAsync("https://api.github.com/users/" + input);
 
                     response.EnsureSuccessStatusCode();
                     string responseBody = await response.Content.ReadAsStringAsync();
