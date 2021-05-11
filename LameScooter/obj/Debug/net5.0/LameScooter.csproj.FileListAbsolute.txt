@@ -1,0 +1,16 @@
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\LameScooter.exe
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\LameScooter.deps.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\LameScooter.runtimeconfig.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\LameScooter.runtimeconfig.dev.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\LameScooter.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\ref\LameScooter.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\LameScooter.pdb
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.csprojAssemblyReference.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.AssemblyInfoInputs.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.AssemblyInfo.cs
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.csproj.CoreCompileInputs.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\ref\LameScooter.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.pdb
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.genruntimeconfig.cache
