@@ -25,9 +25,10 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
     public class OfflineLameScooterRental : ILameScooterRental
     {
 
-        static async Task<int> GetScooterCountInStation(string stationName)
+        public async Task<int> GetScooterCountInStation(string stationName)
         {
             var jsonObject = JsonConvert.DeserializeObject<LameScooterStationList>(stationName);
+            return jsonObject.bikesAvailable;
         }
 
     }
@@ -41,7 +42,7 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
         public int bikesAvailable { get; set; }
         public int spacesAvailable { get; set; }
         public int capacity { get; set; }
-        public bool allowDropoff { get; set}
+        public bool allowDropoff { get; set; }
         public bool allowOverloading { get; set; }
         public bool isFloatingBike { get; set; }
         public bool isCarStation { get; set; }
