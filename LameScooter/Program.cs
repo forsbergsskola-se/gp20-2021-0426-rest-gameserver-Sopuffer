@@ -1,19 +1,19 @@
-ï»¿using System;
-using System.Text.Json;
-using System.Net.Http;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
 using System.IO;
 using Newtonsoft.Json;
+    
 namespace gp20_2021_0426_rest_gameserver_Sopuffer
 {
     class Program
     {
         static async Task Main(string[] args)
         {
-            ILameScooterRental rental = null;
-
-            var count = await rental.GetScooterCountInStation(null);
-            Console.WriteLine("Number of Scooters Available at this Station: ");
+            OfflineLameScooterRental rental = new OfflineLameScooterRental();
+            var count = await rental.GetScooterCountInStation("Linnanmäki");
+            Console.WriteLine("Number of Scooters Available at this Station: " + count);
         }
     }
 
@@ -24,16 +24,31 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
 
     public class OfflineLameScooterRental : ILameScooterRental
     {
-
         public async Task<int> GetScooterCountInStation(string stationName)
         {
-            var jsonObject = JsonConvert.DeserializeObject<LameScooterStationList>(stationName);
-            return jsonObject.bikesAvailable;
+               var file = await File.ReadAllTextAsync("Scooters.json", System.Text.Encoding.ASCII);
+
+                var jsonObject = JsonConvert.DeserializeObject<LameScooterStationList>(file);
+
+                foreach (var station in jsonObject.Stations)
+                {
+                    
+                    if (station.name == stationName)
+                    {
+                         return station.bikesAvailable;
+                    }
+                   Console.WriteLine(station.name + " " + station.bikesAvailable);
+                }
+               return default;
+            
         }
 
-    }
-
     public class LameScooterStationList
+    {
+        public List <LameScooterStation> Stations;
+            
+    }
+    public class LameScooterStation
     {
         public string id { get; set; }
         public string name { get; set; }
@@ -50,4 +65,5 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
         public string[] networks { get; set; }
         public bool realTimeData { get; set; }
     }
+}
 }

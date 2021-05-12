@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\LameScooter\\LameScooter.csproj": {}
+    "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\temp\\temp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\LameScooter\\LameScooter.csproj": {
+    "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\temp\\temp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\LameScooter\\LameScooter.csproj",
-        "projectName": "LameScooter",
-        "projectPath": "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\LameScooter\\LameScooter.csproj",
+        "projectUniqueName": "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\temp\\temp.csproj",
+        "projectName": "temp",
+        "projectPath": "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\temp\\temp.csproj",
         "packagesPath": "C:\\Users\\sophi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\LameScooter\\obj\\",
+        "outputPath": "C:\\Users\\sophi\\Desktop\\Sophie's Projects\\gp20-2021-0426-rest-gameserver-Sopuffer\\temp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
@@ -44,12 +44,6 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "dependencies": {
-            "Newtonsoft.Json": {
-              "target": "Package",
-              "version": "[13.0.1, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

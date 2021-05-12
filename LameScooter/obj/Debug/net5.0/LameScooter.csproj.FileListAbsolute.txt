@@ -14,3 +14,6 @@ C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer
 C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\ref\LameScooter.dll
 C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.pdb
 C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.genruntimeconfig.cache
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\Scooters.json
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\bin\Debug\net5.0\Newtonsoft.Json.dll
+C:\Users\sophi\Desktop\Sophie's Projects\gp20-2021-0426-rest-gameserver-Sopuffer\LameScooter\obj\Debug\net5.0\LameScooter.csproj.CopyComplete
