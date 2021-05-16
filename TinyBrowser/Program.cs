@@ -8,6 +8,8 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
 {
     class Program
     {
+       static List<Group> options = new List<Group>();
+
         static void Main(string[] args)
         {
             Start();
@@ -60,7 +62,6 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
         {
             Regex regex = new Regex("href\\s*=\\s*(?:\"(?<1>[^\"]*)\"|(?<1>\\S+))", RegexOptions.IgnoreCase);
             Match match;
-            List<Group> options = new List<Group>();
             for (match = regex.Match(website); match.Success; match = match.NextMatch())
             {
                 options.Add(match);
@@ -149,9 +150,11 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
                                         bytesReceived = stream.Read(resultBytes, totalBytesReceived, resultBytes.Length - totalBytesReceived);
                                         totalBytesReceived += bytesReceived;
                                         string website = Encoding.ASCII.GetString(resultBytes, 0, totalBytesReceived);
+                                        Console.WriteLine(website);
+
                                     }
 
-                                    tcpClient.Close();
+                            tcpClient.Close();
                                     stream.Close();
                             break;
 
@@ -171,9 +174,11 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
                                         bytesReceived = secondstream.Read(secondresultBytes, secondtotalBytesReceived, secondresultBytes.Length - secondtotalBytesReceived);
                                         secondtotalBytesReceived += bytesReceived;
                                         string website = Encoding.ASCII.GetString(secondresultBytes, 0, secondtotalBytesReceived);
-                                    }       
+                                        Console.WriteLine(website);
 
-                                    secondtcpClient.Close();
+                                    }
+
+                            secondtcpClient.Close();
                                     secondstream.Close();
                                 break;
 
@@ -193,7 +198,7 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
                                         bytesReceived = thirdstream.Read(thirdresultBytes, thirdtotalBytesReceived, thirdresultBytes.Length - thirdtotalBytesReceived);
                                         thirdtotalBytesReceived += bytesReceived;
                                         string website = Encoding.ASCII.GetString(thirdresultBytes, 0, thirdtotalBytesReceived);
-                                
+                                    Console.WriteLine(website);
                                     }
 
                                     thirdtcpClient.Close();
@@ -203,6 +208,14 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
 
                         }
                     }
+                else
+                {
+                    if(tcpName.Contains ("images"))
+                    {
+                        Console.WriteLine("This is an image. Thank you. Now Please try another link:");
+                        ConnectToHref(options);
+                    }
+                }
 
                 }
               {
