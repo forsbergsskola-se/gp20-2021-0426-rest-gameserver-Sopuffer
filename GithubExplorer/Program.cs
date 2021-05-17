@@ -5,21 +5,35 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
+
+
 namespace GithubExplorer
 {
     class Program
     {
 
         public static string userName;
-
+        public static string token;
         static async Task Main(string[] args)
         {
-            Task t = new Task(HttpGetUser);
-            Console.WriteLine("Welcome to Github! Please enter a Github User: ");
-            userName = Console.ReadLine();
-            if (userName != null)
+            while (token == null)
             {
-                t.Start();
+                Task t = new Task(HttpGetUser);
+                Console.WriteLine("Welcome to Sopuffer's Github! Please write Sopuffer as usename: ");
+                userName = Console.ReadLine();
+           
+                if (userName != "sopuffer")
+                {
+
+                    Console.WriteLine("You cannot enter this user. Please try again: ");
+                    continue;
+                }
+                Console.WriteLine("Great! Now Enter authorization token");
+                token = Console.ReadLine();
+                
+                t.Start();  
+                
+                
             }
             Console.ReadLine();
         }
@@ -31,15 +45,18 @@ namespace GithubExplorer
             {
                 var URL = "https://api.github.com/users/" + userName;
 
-                HttpClientHandler handler = new HttpClientHandler();
+               // HttpClientHandler handler = new HttpClientHandler();
                 Console.WriteLine("GET: " + URL + "\n");
-                HttpClient client = new HttpClient(handler);
+                HttpClient client = new HttpClient();
                 var byteArray = Encoding.ASCII.GetBytes("username:password1234" + "\n");
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Token", token);
                 client.DefaultRequestHeaders.Add("User-Agent", "C# App");
                 HttpResponseMessage response = await client.GetAsync(URL);
                 HttpContent content = response.Content;
                 string result = await content.ReadAsStringAsync();
+                
+                
+                
                 if (result != null)
                 {
                     var option = new JsonSerializerOptions();
@@ -72,6 +89,13 @@ namespace GithubExplorer
                     {
                         Console.WriteLine($"Title : {issue.Title}\r\nInfo :{issue.Body}");
                     }
+
+                    var newIssue = new Issue();
+                    newIssue.Title = "This is a new Test issue";
+                    newIssue.Body = "testing testing, this is a test";
+                    var test = client.PostAsJsonAsync(l[0].Issues_url, newIssue).Result;
+                    Console.WriteLine(l[0].Issues_url);
+                    Console.WriteLine(test);
 
                     //var commentJSon = client.GetStringAsync(issues[1].Comments_url).Result;
                     //var comments = JsonSerializer.Deserialize<List<Issue>>(commentJSon, option);
