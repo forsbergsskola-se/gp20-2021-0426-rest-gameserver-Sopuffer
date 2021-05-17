@@ -51,14 +51,10 @@ namespace GithubExplorer
                     var r = client.GetStringAsync($"{user.Repos_url}").Result;
                     var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
 
-                    Console.WriteLine("Curren Repositories: \n");
+                    Console.WriteLine("Current Repositories: \n");
                     foreach (var repo in l)
                     {
                         Console.WriteLine( "* "+ repo.Name);
-
-                        //var index = repo.Issues_url.IndexOf("{");
-                        //repo.Issues_url = repo.Issues_url.Remove(index);
-                        //Console.WriteLine(repo.Issues_url);
                     }
 
                     foreach(var repo in l)
