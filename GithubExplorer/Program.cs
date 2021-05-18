@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 
 namespace GithubExplorer
 {
@@ -45,11 +43,16 @@ namespace GithubExplorer
             {
                 var URL = "https://api.github.com/users/" + userName;
 
-               // HttpClientHandler handler = new HttpClientHandler();
                 Console.WriteLine("GET: " + URL + "\n");
                 HttpClient client = new HttpClient();
-                var byteArray = Encoding.ASCII.GetBytes("username:password1234" + "\n");
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Token", token);
+                
+                client.DefaultRequestHeaders.UserAgent.Add(
+                new System.Net.Http.Headers.ProductInfoHeaderValue("GitHubExplorer", "0.1"));
+                client.DefaultRequestHeaders.Accept.Add(
+                    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Token", token);
+
                 client.DefaultRequestHeaders.Add("User-Agent", "C# App");
                 HttpResponseMessage response = await client.GetAsync(URL);
                 HttpContent content = response.Content;
@@ -73,38 +76,34 @@ namespace GithubExplorer
                     {
                         Console.WriteLine( "* "+ repo.Name);
                     }
+                    Console.WriteLine("\n\n");
 
-                    foreach(var repo in l)
+                    foreach (var repo in l)
                     {
                         var index = repo.Issues_url.IndexOf("{");
                         repo.Issues_url = repo.Issues_url.Remove(index);
                         Console.WriteLine(repo.Issues_url);
                     }
+                    Console.WriteLine("\n\n");
 
-                    Console.WriteLine(l[0].Issues_url);
                     var repoInfo1 = client.GetStringAsync(l[0].Issues_url).Result;
                     var issues = JsonSerializer.Deserialize<List<Issue>>(repoInfo1, option);
 
+                    Console.WriteLine("Issue title and body from " + l[0].Issues_url);
                     foreach (var issue in issues)
                     {
-                        Console.WriteLine($"Title : {issue.Title}\r\nInfo :{issue.Body}");
+                        Console.WriteLine($"Title : {issue.title}\r\nInfo :{issue.body}");
                     }
 
                     var newIssue = new Issue();
-                    newIssue.Title = "This is a new Test issue";
-                    newIssue.Body = "testing testing, this is a test";
+                    newIssue.title = "This is another another Test issue";
+                    newIssue.body = "testing testing, this is another ANOTHER test";
                     var test = client.PostAsJsonAsync(l[0].Issues_url, newIssue).Result;
-                    Console.WriteLine(l[0].Issues_url);
+                    Console.WriteLine("\n\n");
+
+                    Console.WriteLine(l[0].Issues_url + "\n\n\n");
                     Console.WriteLine(test);
-
-                    //var commentJSon = client.GetStringAsync(issues[1].Comments_url).Result;
-                    //var comments = JsonSerializer.Deserialize<List<Issue>>(commentJSon, option);
-                    //Console.WriteLine(commentJSon);
-                    //foreach (var issue in comments)
-                    //{
-                    //    Console.WriteLine($"Title : {issue.Title}\r\nInfo :{issue.Body}\r\n");
-                    //}
-
+                    Console.WriteLine(test.Content.ReadAsStringAsync().Result);
                 }
 
             }
@@ -112,11 +111,11 @@ namespace GithubExplorer
         /*Source: Github.com/forsbergsskola-se/gp20-2021-0426-rest-gameserver-kevinlempa*/
         public class Issue
         {
-            public string Title { get; set; }
-            public string Body { get; set; }
-            public DateTime Created_at { get; set; }
-            public DateTime Updated_at { get; set; }
-            public string Comments_url { get; set; }
+           [JsonPropertyName("Title")] public string title { get; set; }
+            public string body { get; set; }
+            public DateTime created_at { get; set; }
+            public DateTime updated_at { get; set; }
+            public string comments_url { get; set; }
         }
         public class Repo
         {
