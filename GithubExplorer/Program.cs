@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-
+using System.Net.Http.Json;
 namespace GithubExplorer
 {
     class Program
@@ -12,14 +12,20 @@ namespace GithubExplorer
 
         public static string userName;
         public static string token;
+        static HttpClient client = new HttpClient();
+        static HttpContent content;
+        static HttpResponseMessage response;
+        static GitHubUser user;
+        static JsonSerializerOptions option;
+        static string result;
         static async Task Main(string[] args)
         {
+            Task t = new Task(HttpGetUser);
             while (token == null)
             {
-                Task t = new Task(HttpGetUser);
                 Console.WriteLine("Welcome to Sopuffer's Github! Please write Sopuffer as usename: ");
                 userName = Console.ReadLine();
-           
+
                 if (userName != "sopuffer")
                 {
 
@@ -29,10 +35,9 @@ namespace GithubExplorer
                 Console.WriteLine("Great! Now Enter authorization token");
                 token = Console.ReadLine();
                 
-                t.Start();  
-                
-                
+                t.Start();
             }
+            GithubOptions();   
             Console.ReadLine();
         }
 
@@ -44,8 +49,7 @@ namespace GithubExplorer
                 var URL = "https://api.github.com/users/" + userName;
 
                 Console.WriteLine("GET: " + URL + "\n");
-                HttpClient client = new HttpClient();
-                
+
                 client.DefaultRequestHeaders.UserAgent.Add(
                 new System.Net.Http.Headers.ProductInfoHeaderValue("GitHubExplorer", "0.1"));
                 client.DefaultRequestHeaders.Accept.Add(
@@ -54,17 +58,15 @@ namespace GithubExplorer
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Token", token);
 
                 client.DefaultRequestHeaders.Add("User-Agent", "C# App");
-                HttpResponseMessage response = await client.GetAsync(URL);
-                HttpContent content = response.Content;
-                string result = await content.ReadAsStringAsync();
-                
-                
-                
+                response = await client.GetAsync(URL);
+                content = response.Content;
+                result = await content.ReadAsStringAsync();
+
                 if (result != null)
                 {
-                    var option = new JsonSerializerOptions();
+                    option = new JsonSerializerOptions();
                     option.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    var user = JsonSerializer.Deserialize<GitHubUser>(result, option);
+                    user = JsonSerializer.Deserialize<GitHubUser>(result, option);
 
                     Console.WriteLine(user + "\n");
 
@@ -74,48 +76,191 @@ namespace GithubExplorer
                     Console.WriteLine("Current Repositories: \n");
                     foreach (var repo in l)
                     {
-                        Console.WriteLine( "* "+ repo.Name);
+                        Console.WriteLine("* " + repo.Name);
                     }
                     Console.WriteLine("\n\n");
+                    Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
 
-                    foreach (var repo in l)
+                }
+
+            }
+
+        }
+        static void GithubOptions()
+        {
+            bool correctChoice = false;
+            while (!correctChoice)
+            {
+                var input = Console.ReadLine();
+                int value;
+
+                if (int.TryParse(input, out value))
+                {
+                    int repositoryNumber = Convert.ToInt32(input);
+                    if (repositoryNumber < 0 || repositoryNumber > 3)
                     {
-                        var index = repo.Issues_url.IndexOf("{");
-                        repo.Issues_url = repo.Issues_url.Remove(index);
-                        Console.WriteLine(repo.Issues_url);
+                        Console.WriteLine("This number is out of range. Please try again: \n");
+                        continue;
                     }
-                    Console.WriteLine("\n\n");
-
-                    var repoInfo1 = client.GetStringAsync(l[0].Issues_url).Result;
-                    var issues = JsonSerializer.Deserialize<List<Issue>>(repoInfo1, option);
-
-                    Console.WriteLine("Issue title and body from " + l[0].Issues_url);
-                    foreach (var issue in issues)
+                    else
                     {
-                        Console.WriteLine($"Title : {issue.title}\r\nInfo :{issue.body}");
+                        ChooseRepository(repositoryNumber);
+                        correctChoice = true;
                     }
-
-                    var newIssue = new Issue();
-                    newIssue.title = "This is another another Test issue";
-                    newIssue.body = "testing testing, this is another ANOTHER test";
-                    var test = client.PostAsJsonAsync(l[0].Issues_url, newIssue).Result;
-                    Console.WriteLine("\n\n");
-
-                    Console.WriteLine(l[0].Issues_url + "\n\n\n");
-                    Console.WriteLine(test);
-                    Console.WriteLine(test.Content.ReadAsStringAsync().Result);
+                }
+                else
+                {
+                    Console.WriteLine("This is not a number. Please try again: \n");
+                    continue;
                 }
 
             }
         }
+        static void ChooseRepository(int repositoryNumber)
+        {
+
+            bool hasChosenAnAction = false;
+            option = new JsonSerializerOptions();
+            option.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+            var r = client.GetStringAsync($"{user.Repos_url}").Result;
+            var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
+            Repo repo = l[repositoryNumber];
+
+            Console.WriteLine("Repository Name: " + repo.Name);
+            if (repo.Description != null)
+            {
+                Console.WriteLine("Repository description: " + repo.Description);
+            }
+            else
+            {
+                Console.WriteLine("Description: No description available");
+            }
+            Console.WriteLine("Repository html: " + repo.Html_url);
+            Console.WriteLine("Repository url: " + repo.Url);
+            Console.WriteLine("\n");
+
+
+            Console.WriteLine("Press e to exit this repository");
+            Console.WriteLine("Want to read the comments or add a comment? Press c.");
+            Console.WriteLine("Want to read the issues or add an issue? Press i.");
+
+
+            while (!hasChosenAnAction)
+            {
+                var response = Console.ReadLine();
+                int value;
+                if (int.TryParse(response, out value))
+                {
+                    Console.WriteLine("This is a number. Its not valid. Please try again.");
+                    continue;
+                }
+                else
+                {
+                    if(response!= "e" && response!="c" && response!= "i")
+                    {
+                        Console.WriteLine("This is an invalid answer. Please try again.");
+                        continue;
+                    }
+                    else
+                    {
+                        switch (response)
+                        {
+                            case "e":
+                                Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
+                                GithubOptions();
+                                break;
+                            case "i":
+                                CreateIssue(repositoryNumber);
+                                break;
+                            case "c":
+                                CreateComment(repositoryNumber);
+                                break;
+                        }
+                        hasChosenAnAction = true;
+                    }
+                }
+            }
+        }
+
+        static void CreateIssue(int repositoryNumber)
+        {
+            var r = client.GetStringAsync($"{user.Repos_url}").Result;
+            var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
+            Repo repo = l[repositoryNumber];
+
+            foreach (var issueInfo in l)
+            {
+                var index = issueInfo.Issues_url.IndexOf("{");
+                issueInfo.Issues_url = issueInfo.Issues_url.Remove(index);
+            }
+            Console.WriteLine("\n\n");
+
+            var repoInfo = client.GetStringAsync(l[repositoryNumber].Issues_url).Result;
+            var issues = JsonSerializer.Deserialize<List<Issue>>(repoInfo, option);
+
+            Console.WriteLine("Current issues in " + l[1].Issues_url);
+            foreach (var issue in issues)
+            {
+                Console.WriteLine($"Title: {issue.title}\r\nInfo: {issue.body} \n");
+            }
+
+            Console.WriteLine("\n\n");
+            var newIssue = new Issue();
+            Console.WriteLine("Start by entering the Title to your issue: ");
+            string Title = Console.ReadLine();
+            newIssue.title = Title;
+            Console.WriteLine("Enter the Body to your issue:");
+            string Body = Console.ReadLine();
+            newIssue.body = Body;
+            var response = client.PostAsJsonAsync(repo.Issues_url, newIssue).Result;
+            Console.WriteLine("\n\n");
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                Console.WriteLine("Title: " + newIssue.title);
+                Console.WriteLine("Info: " + newIssue.body);
+            }
+            Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
+
+            GithubOptions();
+        }
+
+        static void CreateComment(int repositoryNumber)
+        {
+            option = new JsonSerializerOptions();
+            option.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+            var r = client.GetStringAsync($"{user.Repos_url}").Result;
+            var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
+            Repo repo = l[repositoryNumber];
+            Console.WriteLine("Enter your comment: ");
+            var body = Console.ReadLine();
+            var newComment = new Comment();
+            newComment.Body = body;
+
+            var response = client.PostAsJsonAsync(repo.Comments_url, newComment).Result;
+            Console.WriteLine("\n\n");
+            Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+        }
+
         /*Source: Github.com/forsbergsskola-se/gp20-2021-0426-rest-gameserver-kevinlempa*/
         public class Issue
         {
-           [JsonPropertyName("Title")] public string title { get; set; }
+            public string title { get; set; }
             public string body { get; set; }
             public DateTime created_at { get; set; }
             public DateTime updated_at { get; set; }
             public string comments_url { get; set; }
+        }
+
+        public class Comment
+        {
+            public int Id { get; set; }
+            public string Body { get; set; }
+            public Uri Url { get; set; }
+            public DateTime Created_at { get; set; }
+            public DateTime Updated_at { get; set; }
+            public string Comments_url { get; set; }
         }
         public class Repo
         {
@@ -124,6 +269,8 @@ namespace GithubExplorer
             public string Url { get; set; }
             public string Description { get; set; }
             public string Issues_url { get; set; }
+            public string Comments_url { get; set; }
+
         }
         public class GitHubUser
         {
