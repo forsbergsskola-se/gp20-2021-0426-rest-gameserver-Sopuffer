@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using System.Net.Http.Json;
+using System.Net;
+using System.Linq;
 namespace GithubExplorer
 {
     class Program
@@ -21,21 +22,30 @@ namespace GithubExplorer
         static async Task Main(string[] args)
         {
             Task t = new Task(HttpGetUser);
-            while (token == null)
+            bool enterGithub = false;
+            while (!enterGithub)
             {
                 Console.WriteLine("Welcome to Sopuffer's Github! Please write Sopuffer as usename: ");
                 userName = Console.ReadLine();
 
                 if (userName != "sopuffer")
                 {
-
                     Console.WriteLine("You cannot enter this user. Please try again: ");
                     continue;
                 }
                 Console.WriteLine("Great! Now Enter authorization token");
                 token = Console.ReadLine();
-                
-                t.Start();
+
+                if (token != "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" && token != "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 ")
+                {
+                    Console.WriteLine("Invalid token. Please try again");
+                    continue;
+                }
+                else
+                {
+                    t.Start();
+                    enterGithub = true;
+                }
             }
             GithubOptions();   
             Console.ReadLine();
@@ -43,7 +53,6 @@ namespace GithubExplorer
 
         static async void HttpGetUser()
         {
-
             if (userName != null)
             {
                 var URL = "https://api.github.com/users/" + userName;
@@ -61,7 +70,7 @@ namespace GithubExplorer
                 response = await client.GetAsync(URL);
                 content = response.Content;
                 result = await content.ReadAsStringAsync();
-
+                
                 if (result != null)
                 {
                     option = new JsonSerializerOptions();
@@ -69,7 +78,6 @@ namespace GithubExplorer
                     user = JsonSerializer.Deserialize<GitHubUser>(result, option);
 
                     Console.WriteLine(user + "\n");
-
                     var r = client.GetStringAsync($"{user.Repos_url}").Result;
                     var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
 
@@ -118,7 +126,6 @@ namespace GithubExplorer
         }
         static void ChooseRepository(int repositoryNumber)
         {
-
             bool hasChosenAnAction = false;
             option = new JsonSerializerOptions();
             option.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -141,9 +148,9 @@ namespace GithubExplorer
             Console.WriteLine("\n");
 
 
-            Console.WriteLine("Press e to exit this repository");
-            Console.WriteLine("Want to read the comments or add a comment? Press c.");
-            Console.WriteLine("Want to read the issues or add an issue? Press i.");
+            Console.WriteLine("Press 0 to exit this repository");
+            Console.WriteLine("Want to add a new issue? Press 1.");
+            Console.WriteLine("Want to edit an issue? Want to add a comment, or edit or delete  an existing comments? Press 2.");
 
 
             while (!hasChosenAnAction)
@@ -152,38 +159,39 @@ namespace GithubExplorer
                 int value;
                 if (int.TryParse(response, out value))
                 {
-                    Console.WriteLine("This is a number. Its not valid. Please try again.");
-                    continue;
-                }
-                else
-                {
-                    if(response!= "e" && response!="c" && response!= "i")
+                    int responseValue = Convert.ToInt32(response);
+                    if(responseValue != 0 && responseValue != 1 && responseValue != 2)
                     {
                         Console.WriteLine("This is an invalid answer. Please try again.");
                         continue;
                     }
                     else
                     {
-                        switch (response)
+                        switch (responseValue)
                         {
-                            case "e":
+                            case 0:
                                 Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
                                 GithubOptions();
                                 break;
-                            case "i":
-                                CreateIssue(repositoryNumber);
+                            case 1:
+                                CreateNewIssue(repositoryNumber);
                                 break;
-                            case "c":
-                                CreateComment(repositoryNumber);
+                            case 2:
+                                CreateOrEditIssueandComments(repositoryNumber);
                                 break;
                         }
                         hasChosenAnAction = true;
                     }
                 }
+                else
+                {
+                    Console.WriteLine("This is not a number. Please try again");
+                    continue;
+                }
             }
         }
 
-        static void CreateIssue(int repositoryNumber)
+        static void CreateNewIssue(int repositoryNumber)
         {
             var r = client.GetStringAsync($"{user.Repos_url}").Result;
             var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
@@ -199,7 +207,7 @@ namespace GithubExplorer
             var repoInfo = client.GetStringAsync(l[repositoryNumber].Issues_url).Result;
             var issues = JsonSerializer.Deserialize<List<Issue>>(repoInfo, option);
 
-            Console.WriteLine("Current issues in " + l[1].Issues_url);
+            Console.WriteLine("Current issues in " + l[repositoryNumber].Issues_url + ":") ;
             foreach (var issue in issues)
             {
                 Console.WriteLine($"Title: {issue.title}\r\nInfo: {issue.body} \n");
@@ -215,32 +223,163 @@ namespace GithubExplorer
             newIssue.body = Body;
             var response = client.PostAsJsonAsync(repo.Issues_url, newIssue).Result;
             Console.WriteLine("\n\n");
-            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            if (response.StatusCode == HttpStatusCode.Created)
             {
                 Console.WriteLine("Title: " + newIssue.title);
                 Console.WriteLine("Info: " + newIssue.body);
             }
             Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
-
             GithubOptions();
         }
 
-        static void CreateComment(int repositoryNumber)
+        static void CreateOrEditIssueandComments(int repositoryNumber)
         {
             option = new JsonSerializerOptions();
             option.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
+            bool choiceHavebeenMade = false;
             var r = client.GetStringAsync($"{user.Repos_url}").Result;
             var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
-            Repo repo = l[repositoryNumber];
-            Console.WriteLine("Enter your comment: ");
-            var body = Console.ReadLine();
-            var newComment = new Comment();
-            newComment.Body = body;
 
-            var response = client.PostAsJsonAsync(repo.Comments_url, newComment).Result;
-            Console.WriteLine("\n\n");
-            Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+            Repo repo = l[repositoryNumber];
+
+            var issues = repo.GetIssues(repositoryNumber);
+            foreach(var issue in issues)
+            {
+                var comments = issue.GetComments();
+                while (!choiceHavebeenMade)
+                {
+                    Console.WriteLine("What would you like to do?\n\n " +
+                                      "0: edit an existing comment?\n " +
+                                      "1: create a comment?\n " +
+                                      "2: delete a comment?\n " +
+                                      "3: edit an existing issue?\n " +
+                                      "4: Exit and return to Repositories?\n");
+
+                    var chosenResponse = Console.ReadLine();
+                    int value;
+                    if (int.TryParse(chosenResponse, out value))
+                    {
+                        int convertedResponse = Convert.ToInt32(chosenResponse);
+                        if (convertedResponse != 0 && convertedResponse != 1 && convertedResponse != 2 && convertedResponse != 3 && convertedResponse != 4)
+                        {
+                            Console.WriteLine("This is an invalid number. Please try again");
+                            continue;
+                        }
+                        else
+                        {
+                            switch (convertedResponse)
+                            {
+                                case 0:
+                                    if (comments.Any())
+                                    {
+                                        Console.WriteLine("Please enter a comment ID: ");
+                                        var readPatchLine = Console.ReadLine();
+                                        int patchValue;
+                                        foreach (var comment in comments)
+                                        {
+                                            if (int.TryParse(readPatchLine, out patchValue))
+                                            {
+                                                int readValue = Convert.ToInt32(readPatchLine);
+
+                                                if (comment.id == readValue)
+                                                {
+                                                    comment.PatchComment();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("No comments available to patch.");
+                                            }
+                                        }
+                                    }
+                                    
+                                    break;
+
+                                case 1:
+                                    Console.WriteLine("Type in an issue ID: ");
+                                    var readCreateCommentLine = Console.ReadLine();
+                                    int createCommentID;
+                                    if (int.TryParse(readCreateCommentLine, out createCommentID))
+                                    {
+                                        int createCommentValue = Convert.ToInt32(readCreateCommentLine);
+
+                                        foreach (var createCommentIssue in issues)
+                                        {
+                                            if (createCommentIssue.number == createCommentValue)
+                                            {
+                                                createCommentIssue.CreateComment();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("No comments available to delete.");
+                                    }
+                                    break;
+
+                                case 2:
+                                    Console.WriteLine("Type in a comment ID: ");
+                                    var readDeleteLine = Console.ReadLine();
+                                    int deleteID;
+                                    if (int.TryParse(readDeleteLine, out deleteID))
+                                    {
+                                        foreach (var comment in comments)
+                                        {
+                                      
+                                            int readValue = Convert.ToInt32(readDeleteLine);
+                                      
+                                            if (comment.id == readValue)
+                                            {
+                                                comment.DeleteComment();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("No comments available to delete.");
+                                    }
+                                    break;
+                                case 3:
+                                    Console.WriteLine("Type in the issue ID: ");
+                                    var readIssueLine = Console.ReadLine();
+                                    int editIssueID;
+                                    if ((int.TryParse(readIssueLine, out editIssueID)))
+                                    {
+                                        int readEditIssueValue = Convert.ToInt32(editIssueID);
+                                        foreach (var editIssue in issues)
+                                        {
+                                            if (editIssue.number == readEditIssueValue)
+                                            {
+                                                editIssue.UpdateIssue();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("No issue available to update.");
+                                    }
+                                    break;
+                                
+                                case 4:
+                                    Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
+                                    GithubOptions();
+                                    break;
+                            }
+                            comments = new List<Comment>();
+                            Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
+                            GithubOptions();
+                            choiceHavebeenMade = true;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("This is not a number. Please try again.");
+                        continue;
+                    }
+                }
+            }   
+            Console.WriteLine("Please choose between number 0 & 3 to check out the repositories: ");
+            GithubOptions();
         }
 
         /*Source: Github.com/forsbergsskola-se/gp20-2021-0426-rest-gameserver-kevinlempa*/
@@ -251,16 +390,115 @@ namespace GithubExplorer
             public DateTime created_at { get; set; }
             public DateTime updated_at { get; set; }
             public string comments_url { get; set; }
+            public Uri url { get; set; }
+            public int number { get; set; }
+            public List<Comment> GetComments()
+            {
+                JsonSerializerOptions options;
+                options = new JsonSerializerOptions();
+                options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                
+                var commentJSon = client.GetStringAsync(comments_url).Result;
+                var comments = JsonSerializer.Deserialize<List<Comment>>(commentJSon, options);
+                var list = new List<Comment>();
+                Console.WriteLine("Comments: \n");
+                if (!comments.Any())
+                {
+                    Console.WriteLine("No comments available.");
+                }
+                foreach (var comment in comments)
+                {
+                    Console.WriteLine($"Comment : {comment.body}\r\n" +
+                                      $"Created at : {comment.created_at}\r\n" +
+                                      $"ID : {comment.id}\r\n" +
+                                      $"----------------------");
+                    list.Add(comment);
+                }
+                return list;
+            }
+
+
+            public void CreateComment()
+            {
+                Console.WriteLine("Write your comment:");
+                var comment = Console.ReadLine();
+                var newComment = new Comment();
+                newComment.body = comment;
+                var response = client.PostAsJsonAsync(comments_url, newComment).Result;
+                if (response.StatusCode == HttpStatusCode.Created)
+                {
+                    Console.WriteLine("Congratulations! You created a comment!");
+                }
+                else
+                {
+                    Console.WriteLine("Ah shoot! You could not create comment.");
+
+                }
+            }
+            public void UpdateIssue()
+            {
+                Console.WriteLine("Enter new title: ");
+                var title = Console.ReadLine();
+                Console.WriteLine("Enter new body: ");
+                var body = Console.ReadLine();
+                var newIssue = new Issue();
+                newIssue.title = title;
+                newIssue.body = body;
+                var x = client.PostAsJsonAsync(url, newIssue).Result;
+                if (x.StatusCode == HttpStatusCode.OK)
+                {
+                    Console.WriteLine("Issue has been successfully updated.");
+                }
+                else
+                {
+                    Console.WriteLine("Ah shoot! Issue was not updated.");
+                }
+            }
+
+            
         }
 
         public class Comment
         {
-            public int Id { get; set; }
-            public string Body { get; set; }
-            public Uri Url { get; set; }
-            public DateTime Created_at { get; set; }
-            public DateTime Updated_at { get; set; }
-            public string Comments_url { get; set; }
+        public int id { get; set; }
+        public string body { get; set; }
+        public Uri url { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+        public string comments_url { get; set; }
+
+        public void PatchComment()
+            
+            {
+                Console.WriteLine("Enter your comment: ");
+                var body = Console.ReadLine();
+                var newComment = new Comment();
+                newComment.body = body;
+
+                var response = client.PostAsJsonAsync(url, newComment).Result;
+                Console.WriteLine("\n\n");
+                if (response.StatusCode == HttpStatusCode.Created)
+                {
+                    Console.WriteLine("Your comment: " + newComment.body);
+                }
+            
+                Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+            }
+
+        public void DeleteComment()
+            {
+                var response = client.DeleteAsync(url).Result;
+                if(response.StatusCode == HttpStatusCode.NoContent)
+                {
+                    Console.WriteLine("Congratulations! You deleted a comment!");
+                }
+                else
+                {
+                    Console.WriteLine("A shoot! You could not delete the comment!");
+
+                }
+            }
+        
         }
         public class Repo
         {
@@ -270,6 +508,53 @@ namespace GithubExplorer
             public string Description { get; set; }
             public string Issues_url { get; set; }
             public string Comments_url { get; set; }
+            JsonSerializerOptions options = new JsonSerializerOptions();
+
+
+            public List<Issue> GetIssues(int repositoryNumber)
+            {
+                //var r = client.GetStringAsync($"{user.Repos_url}").Result;
+                //var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
+
+                //foreach (var issueInfo in l)
+                //{
+                //    var index = issueInfo.Issues_url.IndexOf("{");
+                //    issueInfo.Issues_url = issueInfo.Issues_url.Remove(index);
+                //}
+                //Console.WriteLine("\n\n");
+
+                //var issuesJson = client.GetStringAsync(Issues_url).Result;
+                //var issues = JsonSerializer.Deserialize<List<Issue>>(issuesJson, options);
+
+                //Console.WriteLine("Listed Issues: \n");
+                var r = client.GetStringAsync($"{user.Repos_url}").Result;
+                var l = JsonSerializer.Deserialize<List<Repo>>(r, option);
+                foreach (var issueInfo in l)
+                {
+                    var index = issueInfo.Issues_url.IndexOf("{");
+                    issueInfo.Issues_url = issueInfo.Issues_url.Remove(index);
+                }
+                Console.WriteLine("\n\n");
+
+                var repoInfo = client.GetStringAsync(l[repositoryNumber].Issues_url).Result;
+                var issues = JsonSerializer.Deserialize<List<Issue>>(repoInfo, option);
+
+                Console.WriteLine("Current issues in " + l[repositoryNumber].Issues_url);
+                foreach (var issue in issues)
+                {
+                    Console.WriteLine($"Title: {issue.title}\r\nInfo: {issue.body} \n");
+                }
+                var list = new List<Issue>();
+                foreach(var issue in issues)
+                {
+                    list.Add(issue);
+                    Console.WriteLine($"Title : {issue.title}\r\n" +
+                                  $"Id : {issue.number}\r\n" +
+                                  $"----------------------");
+                }
+                return list;
+            }
+            }
 
         }
         public class GitHubUser
@@ -341,5 +626,6 @@ namespace GithubExplorer
             }
         }
     }
-}
+
+
 
