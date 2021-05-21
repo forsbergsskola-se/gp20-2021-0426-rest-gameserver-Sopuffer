@@ -9,7 +9,7 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
     class Program
     {
        static List<Group> options = new List<Group>();
-
+       static string originalWebsite = "acme.com";
         static void Main(string[] args)
         {
             Start();
@@ -17,10 +17,10 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
         }
         static void Start()
         {
-            var tcpClient = new TcpClient("acme.com", 80);
+            var tcpClient = new TcpClient(originalWebsite, 80);
             var stream = tcpClient.GetStream();
 
-            var bytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: acme.com\r\n\r\n");
+            var bytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost:" + originalWebsite + "\r\n\r\n");
             stream.Write(bytes);
            
             string httpRequestTitle = Encoding.ASCII.GetString(bytes);
@@ -60,7 +60,7 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
         
         public static void GetHRefConnections(string website)
         {
-            Regex regex = new Regex("href\\s*=\\s*(?:\"(?<1>[^\"]*)\"|(?<1>\\S+))", RegexOptions.IgnoreCase);
+            Regex regex = new Regex("a href\\s*=\\s*(?:\"(?<1>[^\"]*)\"|(?<1>\\S+))", RegexOptions.IgnoreCase);
             Match match;
             for (match = regex.Match(website); match.Success; match = match.NextMatch())
             {
@@ -86,10 +86,10 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
             {
                 Console.WriteLine("Please write a number to pick one of these indexes: ");
 
-                string c = Console.ReadLine();
+                string input = Console.ReadLine();
                 int value;
                 
-                if (int.TryParse(c, out value)) {
+                if (int.TryParse(input, out value)) {
                     if (value < hrefs.Count && value >= 0)
                     {
                         ExtractHref(hrefs, value);
@@ -127,102 +127,146 @@ namespace gp20_2021_0426_rest_gameserver_Sopuffer
             string tcpName = connection.Substring(connection.IndexOf('"') +1);
             tcpName = tcpName.Remove(tcpName.Length - 1);
             Console.WriteLine(tcpName);
-            string[] websitenames = { "google", "paypal", "mapper.acme", "99dogs", "validator" };  
-                for (i = 0; i <= websitenames.Length; i++)
+            string[] websitenames = { "google", "paypal", "mapper.acme", "99dogs", "validator" };
+            for (i = 0; i <= websitenames.Length; i++)
+            {
+                if (tcpName.Contains(websitenames[i]))
                 {
-                    if (tcpName.Contains(websitenames[i]))
+                    switch (i)
                     {
-                        switch (i)
-                        {
-                            case 0:
-                                    var tcpClient = new TcpClient("google.com", 80);
-                                    var stream = tcpClient.GetStream();
+                        case 0:
+                            var tcpClient = new TcpClient("google.com", 80);
+                            var stream = tcpClient.GetStream();
 
-                                    var bytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: www.google.com\r\n\r\n");
-                                    stream.Write(bytes);
-                                    string httpRequestTitle = Encoding.ASCII.GetString(bytes);
-                                    Console.WriteLine(httpRequestTitle);
-                                    byte[] resultBytes = new byte[224 * 224];
-                                    var totalBytesReceived = 0;
-                                    var bytesReceived = 1;
-                                    while (bytesReceived != 0)
-                                    {
-                                        bytesReceived = stream.Read(resultBytes, totalBytesReceived, resultBytes.Length - totalBytesReceived);
-                                        totalBytesReceived += bytesReceived;
-                                        string website = Encoding.ASCII.GetString(resultBytes, 0, totalBytesReceived);
-                                        Console.WriteLine(website);
-
-                                    }
+                            var bytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: www.google.com\r\n\r\n");
+                            stream.Write(bytes);
+                            string httpRequestTitle = Encoding.ASCII.GetString(bytes);
+                            Console.WriteLine(httpRequestTitle);
+                            byte[] resultBytes = new byte[224 * 224];
+                            var totalBytesReceived = 0;
+                            var bytesReceived = 1;
+                            while (bytesReceived != 0)
+                            {
+                                bytesReceived = stream.Read(resultBytes, totalBytesReceived, resultBytes.Length - totalBytesReceived);
+                                totalBytesReceived += bytesReceived;
+                                string website = Encoding.ASCII.GetString(resultBytes, 0, totalBytesReceived);
+                                Console.WriteLine(website);
+                            }
 
                             tcpClient.Close();
-                                    stream.Close();
+                            stream.Close();
                             break;
 
-                            case 1:
-                                    var secondtcpClient = new TcpClient("paypal.com", 80);
-                                    var secondstream = secondtcpClient.GetStream();
+                        case 1:
+                            var secondtcpClient = new TcpClient("paypal.com", 80);
+                            var secondstream = secondtcpClient.GetStream();
 
-                                    var secondbytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: www.paypal.com\r\n\r\n");
-                                    secondstream.Write(secondbytes);
-                                    string secondhttpRequestTitle = Encoding.ASCII.GetString(secondbytes);
-                                    Console.WriteLine(secondhttpRequestTitle);
-                                    byte[] secondresultBytes = new byte[124 * 124];
-                                    var secondtotalBytesReceived = 0;
-                                    var secondbytesReceived = 1;
-                                    while (secondbytesReceived != 0)
-                                    {
-                                        bytesReceived = secondstream.Read(secondresultBytes, secondtotalBytesReceived, secondresultBytes.Length - secondtotalBytesReceived);
-                                        secondtotalBytesReceived += bytesReceived;
-                                        string website = Encoding.ASCII.GetString(secondresultBytes, 0, secondtotalBytesReceived);
-                                        Console.WriteLine(website);
+                            var secondbytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: www.paypal.com\r\n\r\n");
+                            secondstream.Write(secondbytes);
+                            string secondhttpRequestTitle = Encoding.ASCII.GetString(secondbytes);
+                            Console.WriteLine(secondhttpRequestTitle);
+                            byte[] secondresultBytes = new byte[124 * 124];
+                            var secondtotalBytesReceived = 0;
+                            var secondbytesReceived = 1;
+                            while (secondbytesReceived != 0)
+                            {
+                                bytesReceived = secondstream.Read(secondresultBytes, secondtotalBytesReceived, secondresultBytes.Length - secondtotalBytesReceived);
+                                secondtotalBytesReceived += bytesReceived;
+                                string website = Encoding.ASCII.GetString(secondresultBytes, 0, secondtotalBytesReceived);
+                                Console.WriteLine(website);
 
-                                    }
+                            }
 
                             secondtcpClient.Close();
-                                    secondstream.Close();
-                                break;
+                            secondstream.Close();
+                            break;
 
-                            case 2:
-                                    var thirdtcpClient = new TcpClient("mapper.acme.com", 80);
-                                    var thirdstream = thirdtcpClient.GetStream();
+                        case 2:
+                            var thirdtcpClient = new TcpClient("mapper.acme.com", 80);
+                            var thirdstream = thirdtcpClient.GetStream();
 
-                                    var thirdbytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: mapper.acme.com\r\n\r\n");
-                                    thirdstream.Write(thirdbytes);
-                                    string thirdhttpRequestTitle = Encoding.ASCII.GetString(thirdbytes);
-                                    Console.WriteLine(thirdhttpRequestTitle);
-                                    byte[] thirdresultBytes = new byte[224 * 224];
-                                    var thirdtotalBytesReceived = 0;
-                                    var thirdbytesReceived = 1;
-                                    while (thirdbytesReceived != 0)
-                                    {
-                                        bytesReceived = thirdstream.Read(thirdresultBytes, thirdtotalBytesReceived, thirdresultBytes.Length - thirdtotalBytesReceived);
-                                        thirdtotalBytesReceived += bytesReceived;
-                                        string website = Encoding.ASCII.GetString(thirdresultBytes, 0, thirdtotalBytesReceived);
-                                    Console.WriteLine(website);
-                                    }
+                            var thirdbytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: mapper.acme.com\r\n\r\n");
+                            thirdstream.Write(thirdbytes);
+                            string thirdhttpRequestTitle = Encoding.ASCII.GetString(thirdbytes);
+                            Console.WriteLine(thirdhttpRequestTitle);
+                            byte[] thirdresultBytes = new byte[224 * 224];
+                            var thirdtotalBytesReceived = 0;
+                            var thirdbytesReceived = 1;
+                            while (thirdbytesReceived != 0)
+                            {
+                                bytesReceived = thirdstream.Read(thirdresultBytes, thirdtotalBytesReceived, thirdresultBytes.Length - thirdtotalBytesReceived);
+                                thirdtotalBytesReceived += bytesReceived;
+                                string website = Encoding.ASCII.GetString(thirdresultBytes, 0, thirdtotalBytesReceived);
+                                Console.WriteLine(website);
+                            }
 
-                                    thirdtcpClient.Close();
-                                    thirdstream.Close();
-                             break;
+                            thirdtcpClient.Close();
+                            thirdstream.Close();
+                            break;
 
-
-                        }
                     }
+                   
+                }
                 else
                 {
-                    if(tcpName.Contains ("images"))
-                    {
-                        Console.WriteLine("This is an image. Thank you. Now Please try another link:");
-                        ConnectToHref(options);
-                    }
+                    NextPage(tcpName);
+                    return;
                 }
-
-                }
-              {
-             
-                
             }
+                    
 
+                    //var thirdtcpClient = new TcpClient(nextWebPage, 80);
+                    //var thirdstream = thirdtcpClient.GetStream();
+
+                    //var thirdbytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost:" +  nextWebPage + "\r\n\r\n");
+                    //thirdstream.Write(thirdbytes);
+                    //string thirdhttpRequestTitle = Encoding.ASCII.GetString(thirdbytes);
+                    //Console.WriteLine(thirdhttpRequestTitle);
+                    //byte[] thirdresultBytes = new byte[224 * 224];
+                    //var thirdtotalBytesReceived = 0;
+                    //var thirdbytesReceived = 1;
+                    //while (thirdbytesReceived != 0)
+                    //{
+                    //    bytesReceived = thirdstream.Read(thirdresultBytes, thirdtotalBytesReceived, thirdresultBytes.Length - thirdtotalBytesReceived);
+                    //    thirdtotalBytesReceived += bytesReceived;
+                    //    string website = Encoding.ASCII.GetString(thirdresultBytes, 0, thirdtotalBytesReceived);
+                    //    Console.WriteLine(website);
+                    //}
+
+                    //thirdtcpClient.Close();
+                    //thirdstream.Close();
+                }
+
+        static void NextPage(string tcpName)
+        {
+            tcpName = tcpName.TrimStart('/');
+            string nextWebPage = originalWebsite + "/" + tcpName;
+            Console.WriteLine(nextWebPage);
+            //var connectionTcpClient = new TcpClient(nextWebPage, 80);
+            //var connectionStream = connectionTcpClient.GetStream();
+
+            //var thirdbytes = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost:" + nextWebPage + "\r\n\r\n");
+            //connectionStream.Write(thirdbytes);
+            //string thirdhttpRequestTitle = Encoding.ASCII.GetString(thirdbytes);
+            //Console.WriteLine(thirdhttpRequestTitle);
+            //byte[] resultBytes = new byte[224 * 224];
+            //var thirdtotalBytesReceived = 0;
+            //var bytesReceived = 1;
+            //while (bytesReceived != 0)
+            //{
+            //    bytesReceived = connectionStream.Read(resultBytes, thirdtotalBytesReceived, resultBytes.Length - thirdtotalBytesReceived);
+            //    thirdtotalBytesReceived += bytesReceived;
+            //    string website = Encoding.ASCII.GetString(resultBytes, 0, thirdtotalBytesReceived);
+            //    Console.WriteLine(website);
+            //}
+
+            //connectionTcpClient.Close();
+            //connectionStream.Close();
         }
+
     }
-}
+            
+
+ }
+ 
+
